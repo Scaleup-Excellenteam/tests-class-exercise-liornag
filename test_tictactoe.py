@@ -14,6 +14,18 @@ def test_row_win():
     ]
     assert board.check_winner('X') is True
 
+
+def test_middle_column_win():
+    board = Board()
+    board.board = [
+        [' ', 'X', ' '],
+        ['O', 'X', ' '],
+        [' ', 'X', 'O']
+    ]
+
+    assert board.check_winner('X') is True
+
+
 def test_column_win():
     board = Board()
     board.board = [
@@ -51,6 +63,19 @@ def test_no_winner_yet():
     assert board.check_winner('X') is False
     assert board.check_winner('O') is False
 
+
+def test_invalid_move_on_taken_cell():
+    game = TicTacToeGame()
+    game.board.board = [
+        ['X', ' ', ' '],
+        [' ', ' ', ' '],
+        [' ', ' ', ' ']
+    ]
+
+    move_success = game.board.make_move(0, 0, 'O')
+    assert move_success is False
+
+
 def test_check_winner_called_once_per_turn():
     game = TicTacToeGame()
 
@@ -70,8 +95,27 @@ def test_check_winner_called_once_per_turn():
 
     assert mock_check_winner.call_count == 5
 
-from unittest.mock import patch
-from tictactoe_oop import TicTacToeGame
+def test_invalid_row_input():
+    game = TicTacToeGame()
+    invalid_inputs = [(-1, 0), (3, 0), (0, 0)]
+
+    with patch.object(game, 'get_move', side_effect=invalid_inputs):
+        move1 = game.get_move()
+        assert move1 == (-1, 0)
+
+        move2 = game.get_move()
+        assert move2 == (3, 0)
+
+        move3 = game.get_move()
+        assert move3 == (0, 0)
+
+def test_invalid_input_type():
+    game = TicTacToeGame()
+
+    with patch('builtins.input', side_effect=['a', 'b', '0', '0']):
+        row, col = game.get_move()
+        assert (row, col) == (0, 0)
+
 
 def test_system_game_play():
     game = TicTacToeGame()
